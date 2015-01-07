@@ -22,6 +22,9 @@ namespace ZigBee.Client
             Application.SetCompatibleTextRenderingDefault(false);
             HubConnection = new HubConnection(ConfigurationManager.AppSettings["HostAddress"]);
             ZigBeeHub = HubConnection.CreateHubProxy("zigBeeHub");
+            HubConnection.Start().Wait();
+            HubConnection.TraceLevel = TraceLevels.All;
+            HubConnection.TraceWriter = Console.Out;
             //TODO: SignalR Push Events Register.
 
             Application.Run(new login());

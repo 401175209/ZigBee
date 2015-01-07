@@ -24,11 +24,12 @@ namespace ZigBee.Server.SignalR
             var pwd = SecurityHelper.SHA256(Password);
             var user = (from u in DB.Users
                         where u.Username == Username
-                        && u.Password == Password
+                        && u.Password == pwd
                         select u).SingleOrDefault();
             if (user == null) return false;
-            Users[Context.ConnectionId] = user.ID;
-            return true; 
+            Users.Add(Context.ConnectionId, user.ID);
+            WriteLog(LogType.Login);
+            return true;
         }
 
         private UserModel GetUser()
@@ -41,6 +42,33 @@ namespace ZigBee.Server.SignalR
         {
             if (!Users.ContainsKey(Context.ConnectionId)) return null;
             else return DB.Users.Find(Users[Context.ConnectionId]).Role;
+        }
+
+        private void WriteLog(LogType Type, string Hint)
+        {
+            try
+            {
+                System.Threading.Tasks.Task.Run(() =>
+                {
+                    if (!Users.ContainsKey(Context.ConnectionId)) return;
+                    var uid = Users[Context.ConnectionId];
+                    DB.Logs.Add(new LogModel
+                    {
+                        UserID = uid,
+                        Time = DateTime.Now,
+                        ID = Guid.NewGuid(),
+                        Detail = Hint,
+                        Type = Type
+                    });
+                    DB.SaveChanges();
+                });
+            }
+            catch { }
+        }
+
+        private void WriteLog(LogType Type)
+        {
+            WriteLog(Type, "");
         }
     }
 }

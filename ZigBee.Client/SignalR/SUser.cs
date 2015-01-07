@@ -9,9 +9,9 @@ namespace ZigBee.Client.SignalR
 {
     public static class SUser
     {
-        public static async Task<bool> Login(string Username, string Password)
+        public async static Task<bool> Login(string Username, string Password)
         {
-            return await Program.ZigBeeHub.Invoke<bool>("Login",Username, Password);
+            return await Program.ZigBeeHub.Invoke<bool>("Login", Username, Password);
         }
 
         public static async Task<bool> ChangePassword(string Username, string OldPassword, string NewPassword)

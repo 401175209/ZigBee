@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Security;
+using System.IO;
+using System.Security.Cryptography;
 
 namespace ZigBee.Server.Helpers
 {
@@ -25,7 +27,15 @@ namespace ZigBee.Server.Helpers
         /// <returns>加密后的字符串</returns> 
         public static string SHA256(string source)
         {
-            return FormsAuthentication.HashPasswordForStoringInConfigFile(source, "SHA256");
+            SHA256 sha256 = new System.Security.Cryptography.SHA256Managed();
+            byte[] sha256Bytes = System.Text.Encoding.Default.GetBytes(source);
+            byte[] cryString = sha256.ComputeHash(sha256Bytes);
+            string sha256Str = string.Empty;
+            for (int i = 0; i < cryString.Length; i++)
+            {
+                sha256Str += cryString[i].ToString("X");
+            }
+            return sha256Str;
         }
 
         /// <summary> 

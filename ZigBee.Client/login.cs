@@ -117,35 +117,60 @@ namespace ZigBee.Client
             SetWindowRegion();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private async void button1_Click(object sender, EventArgs e)
         {
-
-            string stre = "select * from dbo.admin1 where users= '"+textBox1.Text+"'and password ='"+textBox2.Text+"'" ;//比对数据库用户赎数据
-            if (textBox1.Text != "" && textBox2.Text != "")
-            {
-                DataSet ds = db.GetDataSet(stre);
-                if (ds.Tables[0].Rows.Count == 1)
-                {
-                    string qwe7 = "insert into dbo.operate_log values('" + textBox1.Text + "','" + DateTime.Now.ToString() + "','登录','')";
-                    db.ExecuteSql(qwe7);
-                    label1.Visible = false;
-                    label2.Visible = false;
-                    textBox1.Visible = false;
-                    textBox2.Visible = false;
-                    button1.Visible = false;
-                    label3.Visible = true;
-                    pictureBox1.Visible = true;
-                    timer1.Enabled = true;
-                }
-                else
-                    MessageBox.Show("用户名或密码错误，请重新输入！");
-            }
-            else
+            if (string.IsNullOrEmpty(textBox1.Text) || string.IsNullOrEmpty(textBox2.Text))
             {
                 textBox1.Text = "";//清空用户名
                 textBox2.Text = "";//清空密码
                 MessageBox.Show("用户名和密码不能为空！");
+                return;
             }
+            var result = await SignalR.SUser.Login(textBox1.Text, textBox2.Text);
+            if (result)
+            {
+                label1.Visible = false;
+                label2.Visible = false;
+                textBox1.Visible = false;
+                textBox2.Visible = false;
+                button1.Visible = false;
+                label3.Visible = true;
+                pictureBox1.Visible = true;
+                timer1.Enabled = true;
+                return;
+            }
+            else
+            {
+                MessageBox.Show("用户名或密码错误，请重新输入！");
+                return;
+            }
+
+            //string stre = "select * from dbo.admin1 where users= '"+textBox1.Text+"'and password ='"+textBox2.Text+"'" ;//比对数据库用户赎数据
+            //if (textBox1.Text != "" && textBox2.Text != "")
+            //{
+            //    DataSet ds = db.GetDataSet(stre);
+            //    if (ds.Tables[0].Rows.Count == 1)
+            //    {
+            //        string qwe7 = "insert into dbo.operate_log values('" + textBox1.Text + "','" + DateTime.Now.ToString() + "','登录','')";
+            //        db.ExecuteSql(qwe7);
+            //        label1.Visible = false;
+            //        label2.Visible = false;
+            //        textBox1.Visible = false;
+            //        textBox2.Visible = false;
+            //        button1.Visible = false;
+            //        label3.Visible = true;
+            //        pictureBox1.Visible = true;
+            //        timer1.Enabled = true;
+            //    }
+            //    else
+            //        MessageBox.Show("用户名或密码错误，请重新输入！");
+            //}
+            //else
+            //{
+            //    textBox1.Text = "";//清空用户名
+            //    textBox2.Text = "";//清空密码
+            //    MessageBox.Show("用户名和密码不能为空！");
+            //}
         }
 
         private void label5_MouseEnter(object sender, EventArgs e)
